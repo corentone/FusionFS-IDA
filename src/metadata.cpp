@@ -1,3 +1,10 @@
+/* Author:  Corentin Debains
+ * Email:   cdebains@iit.edu
+ *
+ *
+ * Metadata Class for IDA API
+ */
+
 #include "../inc/metadata.h"
 
 int Metadata::createMetadata(string filepath){

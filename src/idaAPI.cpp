@@ -1,3 +1,10 @@
+/* Author:  Corentin Debains
+ * Email:   cdebains@iit.edu
+ *
+ *
+ * Information Dispersal Algorithm based FusionFS API
+ */
+
 #include "../inc/idaAPI.h"
 
 idaAPI::idaAPI(){
