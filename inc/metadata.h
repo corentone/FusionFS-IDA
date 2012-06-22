@@ -7,6 +7,7 @@ Class Metadata{
 
 	private:
 		//packets?
-		configuration * config;
+		configuration *config;
+		ZHTClient *client;
 };
 
