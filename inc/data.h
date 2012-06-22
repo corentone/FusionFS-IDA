@@ -13,14 +13,17 @@
 Class Data{
 	public:
 		Data(configuration config);
-		int insert(string filepath);
-		int insert();
-		int remove();
-		int get();
+		int insert(string filepath, vector<string> locations);
+		int remove(string filepath, vector<string> locations);
+		int get(string filepath, vector<string> locations);
 
 	private:
-		unsigned char * buffers;
 		int bufsize;
 		int filesize;
+		string cachePath;
+		int fileEncode();
+		int fileDecode();
+		int chunksSend();
+		int chunksDownload();
 };
 

@@ -15,4 +15,6 @@ class idaAPI {
 		int insert(string filepath);
 		int remove(string filepath);
 		int get(string filepath);
+	private:
+		Metadata *meta;
 };

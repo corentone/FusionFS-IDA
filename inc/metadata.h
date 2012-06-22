@@ -17,7 +17,10 @@ Class Metadata{
 		int get();
 
 	private:
+		//packets?
 		vector<string> pkgList;
-		configuration * config;
+		configuration *config;
+		ZHTClient *client;
+
 };
 

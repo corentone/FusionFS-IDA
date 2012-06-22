@@ -441,7 +441,8 @@ int ZHTClient::remove(string str) {
 /*
  * Serializes the metadata of the file and then inserts it in ZHT
  */
-int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> &pkgList, int numTest, int lenString, string localPath, int codingId, int k, int m, int bufsize) {
+// TODO: Remove useless parameters
+int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> &pkgList, string localPath, int codingId, int k, int m, int bufsize) {
 
 	if (this.initialize(cfgFile, memberList) != 0) {
 		cout << "Crap! ZHTClient initialization failed, program exits." << endl;
@@ -450,7 +451,7 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 	
 	// Define the package for the file, the chunk ids and more
 	Package package, package_ret;
-	package.set_virtualpath(randomString(lenString)); // as key TODO
+	package.set_virtualpath("ffs://" << localPath); // as key TODO
 	package.set_isdir(true);
 	package.set_replicano(5); // original--Note: never let it be negative!!!
 	package.set_operation(3); // 3 for insert, 1 for look up, 2 for remove

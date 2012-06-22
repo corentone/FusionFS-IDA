@@ -9,13 +9,17 @@
 
 #include "idaAPI.h"
 
+using namespace std;
+
 int main(int argc, char *argv[]) {
 
 	char *mode = argv[1];
 	char *filename = argv[2]; // Maybe we'll have to change it to std::string
 	
+	string configFilePath = "./config";
+	
 	// Create idaAPI object
-	idaAPI *dfs = new idaAPI();
+	idaAPI *dfs = new idaAPI(configFilePath);
 	
 	if (strcmp(mode, "insert") == 0) {
 		// Call insert API
