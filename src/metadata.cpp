@@ -14,7 +14,7 @@ int Metadata::insert(){
 
 	//TODO
 
-	//Send Metadata to ZHT
+	//insert Metadata to ZHT
 
 
 
