@@ -1,9 +1,9 @@
 // Struct for the config file
-typedef struct Config {
-
+typedef struct {
+	string path;
+	string member_path;
+	int codingId;
 	int k;
 	int m;
 	int bufsize;
-	int library;
-
-} Configuration;
+} configuration;

@@ -1,5 +1,12 @@
-#include "../inc/metadata.h"
-#include "../inc/data.h"
+/* Author:  Corentin Debains
+ * Email:   cdebains@iit.edu
+ *
+ *
+ * Information Dispersal Algorithm based FusionFS API Header
+ */
+
+#include "metadata.h"
+#include "data.h"
 
 class idaAPI {
 	public:
@@ -8,4 +15,6 @@ class idaAPI {
 		int insert(string filepath);
 		int remove(string filepath);
 		int get(string filepath);
+	private:
+		Metadata *meta;
 };
