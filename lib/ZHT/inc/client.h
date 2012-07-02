@@ -40,8 +40,10 @@ public:
 	int insert(string str, int sock); // only for test
 	int lookup(string str, string &returnStr);
 	int lookup(string str, string &returnStr, int sock); // only for test
-	int remove(string str);
+	int removeMeta(std::string str);
 	int tearDownTCP(bool tcp); //only for TCP
-	int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> &pkgList, string localPath, int codingId, int k, int m, int bufsize);
+	int insertMetadata(string cfgFile, string memberList, vector<string> &pkgList, string localPath, int codingId, int k, int m, int bufsize);
+	std::string getMetadata(string path);
+	int removeMetadata(string path);
 };
 #endif

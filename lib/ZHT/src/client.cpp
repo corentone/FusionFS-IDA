@@ -255,7 +255,7 @@ int ZHTClient::lookup(string path, string &returnStr) {
 	package.set_replicano(3); //5: original, 3 not original
 	package.set_virtualpath(path);
 
-	str = package.SerializeAsString();
+	string str = package.SerializeAsString();
 
 	struct HostEntity dest = this->str2Host(str);
 //	cout << "client::lookup is called, now send request..." << endl;
@@ -319,14 +319,13 @@ int ZHTClient::lookup(string path, string &returnStr) {
 	return rcv_size;
 }
 
-int ZHTClient::remove(string path) {
+int ZHTClient::removeMeta(string path) {
 
 	Package package;
-	package.ParseFromString(str);
 	package.set_operation(2); // 3 for insert, 1 for look up, 2 for remove
 	package.set_replicano(3); //5: original, 3 not original
 	package.set_virtualpath(path);
-	str = package.SerializeAsString();
+	string str = package.SerializeAsString();
 
 	int sock = this->str2SockLRU(str, TCP);
 	reuseSock(sock);
@@ -360,14 +359,15 @@ int ZHTClient::remove(string path) {
 // TODO: Remove useless parameters
 int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> &pkgList, string localPath, int codingId, int k, int m, int bufsize) {
 
-	if (this.initialize(cfgFile, memberList) != 0) {
+	if (initialize(cfgFile, memberList) != 0) {
 		cout << "Crap! ZHTClient initialization failed, program exits." << endl;
 		return -1;
 	}
 	
 	// Define the package for the file, the chunk ids and more
 	Package package, package_ret;
-	package.set_virtualpath("ffs://" << localPath); // as key TODO
+	string virtualpath = "ffs://" + localPath;
+	package.set_virtualpath(virtualpath); // as key TODO
 	package.set_isdir(true);
 	package.set_replicano(5); // original--Note: never let it be negative!!!
 	package.set_operation(3); // 3 for insert, 1 for look up, 2 for remove
@@ -375,12 +375,12 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 	
 	// Assign the chunk ids to the metadata
 	// TODO: Each insertion for just one chunk or all of them?
-	package.set_ecChunkIds(chunkId);
+	// package.set_ecchunkids(chunkId);
 	
-	package.set_ecCoding(codingId);
-	package.set_ecK(k);
-	package.set_ecM(m);
-	package.set_ecBufSize(bufsize);
+	package.set_eccoding(codingId);
+	package.set_eck(k);
+	package.set_ecm(m);
+	package.set_ecbufsize(bufsize);
 	
 	string str = package.SerializeAsString();
 	//cout << "package size = " << str.size() << endl;
@@ -405,7 +405,7 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 		c++;
 		string str_ins = *it;
 		//cout << "-----1" << endl;
-		int ret = this.insert(str_ins);
+		int ret = insert(str_ins);
 		//cout << "-----2" << endl;
 		if (ret < 0) {
 			errCount++;
@@ -413,9 +413,6 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 	}
 	//close(sock);
 	end = getTime_msec();
-
-	cout << "Inserted " << numTest - errCount << " packages out of " << numTest
-			<< ", cost " << end - start << " ms" << endl;
 
 	return 0;
 }
@@ -432,20 +429,16 @@ std::string ZHTClient::getMetadata(string path) {
 	//cout << "Client: benchmarkLookup: start lookup \n";
 	int c = 0;
 	
-	this.lookup(path, result);
+	lookup(path, result);
 
 	end = getTime_msec();
 
-	cout << "Lookup " << strList.size() - errCount << " packages out of "
-			<< strList.size() << ", cost " << end - start << " ms" << endl;
 	return result;
 }
 
-int removeMetadata(string path) {
+int ZHTClient::removeMetadata(std::string path) {
 	
-	if (this.remove(filename) < 0) {
-		errCount++;
-	}
+	removeMeta(path);
 
 	double start = 0;
 	double end = 0;
@@ -454,8 +447,6 @@ int removeMetadata(string path) {
 	int c=0;
 	end = getTime_msec();
 
-	cout << "Remove " << strList.size() - errCount << " packages out of "
-			<< strList.size() << ", cost " << end - start << " ms" << endl;
 	return 0;
 
 }
