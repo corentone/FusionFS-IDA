@@ -247,12 +247,13 @@ int ZHTClient::insert(string str) {
  }
  */
 
-int ZHTClient::lookup(string str, string &returnStr) {
+int ZHTClient::lookup(string path, string &returnStr) {
 
 	Package package;
-	package.ParseFromString(str);
+
 	package.set_operation(1); // 3 for insert, 1 for look up, 2 for remove
 	package.set_replicano(3); //5: original, 3 not original
+	package.set_virtualpath(path);
 
 	str = package.SerializeAsString();
 
@@ -271,7 +272,7 @@ int ZHTClient::lookup(string str, string &returnStr) {
 	reuseSock(sock);
 //	cout<<"sock = "<<sock<<endl;
 	sockaddr_in recvAddr;
-	int sentSize = generalSendTo(dest.host.data(),dest.port, sock, str.c_str(), TCP);
+	int sentSize = generalSendTo(dest.host.data(), dest.port, sock, str.c_str(), TCP);
 //	int ret = generalSendTCP(sock, str.c_str());
 
 //	cout << "ZHTClient::lookup: simpleSend return = " << ret << endl;
@@ -317,122 +318,37 @@ int ZHTClient::lookup(string str, string &returnStr) {
 
 	return rcv_size;
 }
-/*
-int ZHTClient::lookup(string str, string &returnStr, int to_sock) {
 
-	Package package;
-	package.ParseFromString(str);
-	package.set_operation(1); // 3 for insert, 1 for look up, 2 for remove
-	package.set_replicano(3); //5: original, 3 not original
-
-	str = package.SerializeAsString();
-
-	int sock = -1;
-	struct HostEntity dest = this->str2Host(str);
-//	cout << "client::lookup is called, now send request..." << endl;
-
-	Package pack;
-	pack.ParseFromString(str);
-//	cout<<"ZHTClient::lookup: operation = "<<pack.operation()<<endl;
-
-//	int ret = simpleSend(str, dest, sock);
-	sock = makeClientSocket(dest.host.c_str(), dest.port, 1);
-//	cout<<"client sock = "<< sock<<endl;
-
-	reuseSock(sock);
-	int ret = generalSendTCP(sock, str.c_str());
-
-//	cout << "ZHTClient::lookup: simpleSend return = " << ret << endl;
-	char buff[MAX_MSG_SIZE]; //MAX_MSG_SIZE
-	memset(buff, 0, sizeof(buff));
-	int rcv_size = -1;
-	if (ret == str.length()) { //this only work for TCP. UDP need to make a new one so accept returns from server.
-//		cout << "before protocol judge" << endl;
-
-		if (TRANS_PROTOCOL == USE_TCP) {
-
-			rcv_size = d3_recv_data(sock, buff, MAX_MSG_SIZE, 0); //MAX_MSG_SIZE
-
-		} else if (TRANS_PROTOCOL == USE_UDP) {
-			//int svrPort = dest.port;//surely wrong, it's just the 50000 port
-			//int svrPort = 50001;
-			//srand(getpid() + clock());
-//			int z = rand() % 10000 + 10000;
-//			cout<<"Client:lookup: random port: "<<z<<endl;
-//			int server_sock = d3_svr_makeSocket(rand() % 10000 + 10000);// use random port to send, and receive lookup result from it too.
-//			cout<<"Client:lookup: UDP socket: "<<server_sock<<endl;
-			sockaddr_in tmp_sockaddr;
-
-			memset(&tmp_sockaddr, 0, sizeof(sockaddr_in));
-//			cout << "lookup: before receive..." << endl;
-			rcv_size = d3_svr_recv(sock, buff, MAX_MSG_SIZE, 0, &tmp_sockaddr); //receive lookup result
-			//d3_closeConnection(server_sock);
-//			cout << "lookup received " << rcv_size << " bytes." << endl;
-
-		}
-		if (rcv_size < 0) {
-			cout << "Lookup receive error." << endl;
-			return rcv_size;
-		} else {
-			returnStr.assign(buff);
-		}
-
-//		cout << "after protocol judge" << endl;
-	}
-	d3_closeConnection(sock);
-
-	return rcv_size;
-}
-*/
-int ZHTClient::remove(string str) {
+int ZHTClient::remove(string path) {
 
 	Package package;
 	package.ParseFromString(str);
 	package.set_operation(2); // 3 for insert, 1 for look up, 2 for remove
 	package.set_replicano(3); //5: original, 3 not original
+	package.set_virtualpath(path);
 	str = package.SerializeAsString();
-
-//	struct HostEntity dest = this->str2Host(str);
-	//int ret = simpleSend(str, dest, sock);
-	/*	sock = makeClientSocket(dest.host.c_str(), dest.port, 1);
-	 reuseSock(sock);
-	 int ret_s = generalSendTCP(sock, str.c_str());
-
-	 int32_t* ret = (int32_t*) malloc(sizeof(int32_t));
-
-	 generalReveiveTCP(sock, (void*) ret, sizeof(int32_t), 0);
-	 int ret_1 = *(int32_t*) ret;
-	 //cout <<"Returned status: "<< *(int32_t*) ret<<endl;
-	 d3_closeConnection(sock);
-	 free(ret);
-
-	 return ret_1;
-	 */
 
 	int sock = this->str2SockLRU(str, TCP);
 	reuseSock(sock);
-//	cout<<"sock = "<<sock<<endl;
+	// cout<<"sock = "<<sock<<endl;
 	struct HostEntity dest = this->str2Host(str);
-		sockaddr_in recvAddr;
-		int sentSize = generalSendTo(dest.host.data() ,dest.port, sock, str.c_str(), TCP);
-//		cout<<"remove sentSize "<< sentSize <<endl;
-		int32_t* ret_buf = (int32_t*) malloc(sizeof(int32_t));
+	sockaddr_in recvAddr;
+	int sentSize = generalSendTo(dest.host.data() ,dest.port, sock, str.c_str(), TCP);
+	// cout<<"remove sentSize "<< sentSize <<endl;
+	int32_t* ret_buf = (int32_t*) malloc(sizeof(int32_t));
 
-	//	generalReveiveTCP(sock, (void*) ret_buf, sizeof(int32_t), 0);
-		generalReceive(sock, (void*)ret_buf, sizeof(int32_t),recvAddr,0, TCP);
+	// generalReveiveTCP(sock, (void*) ret_buf, sizeof(int32_t), 0);
+	generalReceive(sock, (void*)ret_buf, sizeof(int32_t),recvAddr,0, TCP);
 
+	// generalSendTCP(sock, str.c_str());
 
+	// int32_t* ret = (int32_t*) malloc(sizeof(int32_t));
 
-
-//	generalSendTCP(sock, str.c_str());
-
-//	int32_t* ret = (int32_t*) malloc(sizeof(int32_t));
-
-//	generalReveiveTCP(sock, (void*) ret, sizeof(int32_t), 0);
+	// generalReveiveTCP(sock, (void*) ret, sizeof(int32_t), 0);
 	int ret_1 = *(int32_t*) ret_buf;
-//	cout<<"remove got: "<< ret_1 <<endl;
-//cout <<"Returned status: "<< *(int32_t*) ret<<endl;
-//	d3_closeConnection(sock);
+	// cout<<"remove got: "<< ret_1 <<endl;
+	// cout <<"Returned status: "<< *(int32_t*) ret<<endl;
+	// d3_closeConnection(sock);
 	free(ret_buf);
 
 	return ret_1;
@@ -475,35 +391,6 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 
 	pkgList.push_back(str);
 
-	//clientRet = client; //reserve this client object for other benchmark(lookup/remove) to use.
-
-	//vector<string> pkgList;
-	/*
-	int i = 0;
-	for (i = 0; i < numTest; i++) {
-		Package package, package_ret;
-		package.set_virtualpath(randomString(lenString)); //as key
-		package.set_isdir(true);
-		package.set_replicano(5); //orginal--Note: never let it be nagative!!!
-		package.set_operation(3); // 3 for insert, 1 for look up, 2 for remove
-		package.set_realfullpath(
-				"Some-Real-longer-longer-and-longer-Paths--------");
-		package.add_listitem("item-----2");
-		package.add_listitem("item-----3");
-		package.add_listitem("item-----4");
-		package.add_listitem("item-----5");
-		package.add_listitem("item-----6");
-		string str = package.SerializeAsString();
-		//cout << "package size = " << str.size() << endl;
-		//cout<<"Client.cpp:insertMetadata: "<<endl;
-		//cout<<"string: "<<str<<endl;
-		//cout<<"Insert str: "<<str.c_str()<<endl;
-		//cout<<"data(): "<< str.data()<<endl;
-
-		pkgList.push_back(str);
-	}
-	*/
-
 	double start = 0;
 	double end = 0;
 	start = getTime_msec();
@@ -511,14 +398,6 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 	vector<string>::iterator it;
 	int c = 0;
 	//cout << "-----2" << endl;
-
-	//string sampleString  = *(pkgList.begin());
-	//struct HostEntity aHost = client.str2Host(sampleString);
-	/*
-	 int sock = makeClientSocket("localhost", 50000, 1);
-	 cout<<"client sock = "<< sock<<endl;
-	 reuseSock(sock);
-	*/
 
 	for (it = pkgList.begin(); it != pkgList.end(); it++) {
 		//cout <<"insert count "<< c << endl;
@@ -539,5 +418,45 @@ int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> 
 			<< ", cost " << end - start << " ms" << endl;
 
 	return 0;
+}
+
+std::string ZHTClient::getMetadata(string path) {
+
+	vector<string>::iterator it;
+	string result;
+	
+	double start = 0;
+	double end = 0;
+	start = getTime_msec();
+	int errCount = 0;
+	//cout << "Client: benchmarkLookup: start lookup \n";
+	int c = 0;
+	
+	this.lookup(path, result);
+
+	end = getTime_msec();
+
+	cout << "Lookup " << strList.size() - errCount << " packages out of "
+			<< strList.size() << ", cost " << end - start << " ms" << endl;
+	return result;
+}
+
+int removeMetadata(string path) {
+	
+	if (this.remove(filename) < 0) {
+		errCount++;
+	}
+
+	double start = 0;
+	double end = 0;
+	start = getTime_msec();
+	int errCount = 0;
+	int c=0;
+	end = getTime_msec();
+
+	cout << "Remove " << strList.size() - errCount << " packages out of "
+			<< strList.size() << ", cost " << end - start << " ms" << endl;
+	return 0;
+
 }
 

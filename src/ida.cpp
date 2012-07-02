@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "idaAPI.h"
+#include "../inc/idaAPI.h"
 
 using namespace std;
 

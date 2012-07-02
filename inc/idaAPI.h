@@ -7,6 +7,7 @@
 
 #include "metadata.h"
 #include "data.h"
+#include "config.h"
 
 class idaAPI {
 	public:

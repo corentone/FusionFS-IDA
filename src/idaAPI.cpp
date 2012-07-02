@@ -1,6 +1,9 @@
-/* Author:  Corentin Debains
+/* 
+ * Author:  Corentin Debains
  * Email:   cdebains@iit.edu
  *
+ * Author: Pedro Alvarez-Tabio
+ * Email: palvare3@iit.edu
  *
  * Information Dispersal Algorithm based FusionFS API
  */
