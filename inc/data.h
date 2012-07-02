@@ -7,11 +7,11 @@
 
 #include "metadata.h"
 #include "config.h"
-#include <ecwrapper.h>
+//#include <ecwrapper>
 //#include <TRANSFERPROTOCOL>
 
 
-Class Data{
+class Data{
 	public:
 		Data(configuration config);
 		int insert(string filepath, vector<string> locations);
