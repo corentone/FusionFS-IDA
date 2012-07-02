@@ -113,7 +113,7 @@ int Data::fileEncode(string filepath){
 	return 0;
 }
 
-int Data::chunksSend(){
+int Data::chunksSend(vector<string> locations){
 	//TODO
 
 	struct target{

@@ -42,6 +42,6 @@ public:
 	int lookup(string str, string &returnStr, int sock); // only for test
 	int remove(string str);
 	int tearDownTCP(bool tcp); //only for TCP
-
+	int ZHTClient::insertMetadata(string cfgFile, string memberList, vector<string> &pkgList, string localPath, int codingId, int k, int m, int bufsize);
 };
 #endif
