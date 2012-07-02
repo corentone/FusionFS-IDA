@@ -5,6 +5,7 @@
  * Data Management Class for IDA API Header
  */
 
+#include "metadata.h"
 #include "config.h"
 #include <ecwrapper.h>
 //#include <TRANSFERPROTOCOL>
@@ -18,12 +19,13 @@ Class Data{
 		int get(string filepath, vector<string> locations);
 
 	private:
-		int bufsize;
-		int filesize;
+		configuration * config;
+		Metadata * meta;
 		string cachePath;
 		int fileEncode();
-		int fileDecode();
+		int fileDecode(string filepath);
 		int chunksSend();
 		int chunksDownload();
+		int ECLibraryInit(ecContext *ec);
 };
 

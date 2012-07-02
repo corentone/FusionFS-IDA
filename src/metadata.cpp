@@ -14,6 +14,7 @@ using namespace std;
 
 Metadata::Metadata(configuration config) {
 	config(config);
+	client.initialize(config.path, config.member_path);
 }
 
 int Metadata::createMetadata(string filepath) {
