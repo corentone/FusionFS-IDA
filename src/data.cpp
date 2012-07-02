@@ -5,10 +5,12 @@
  * Data Management Class for IDA API
  */
 
+#include "../inc/data.h"
 
-Data::Data(configuration config){
+Data::Data(configuration * config, Metadata * meta){
 
-	//TODO Load config
+	this.config = config;
+	this.meta = meta;
 
 }
 
@@ -29,14 +31,14 @@ int Data::get(string filepath, vector<string> locations){
 	this.fileDecode();
 }
 
-int Data::fileEncode(){
+int Data::fileEncode(string filepath){
 
 	//INPUTS: Filename to Encode, # data blocks (n), # parity blocks (m), size of buffer (in B)
-	char * filename = argv[1];
-	char filenameDest[260];	
-	int n = this.n;
-	int m = this.m;
-	int bufsize = this.bufsize;
+	string filename = filepath;
+	string filenameDest = this.config->cacheDirectory + this.meta.getHash();
+	int n = this.config->k;
+	int m = this.config->m;
+	int bufsize = this.config->bufsize;
 
 	FILE *source;
 	FILE *destination[n+m];
@@ -46,8 +48,7 @@ int Data::fileEncode(){
 	ecFunctions ec;
     ecContext context;
 
-	ec_init_Gibraltar(&ec); //If Gibraltar
-	//ec_init_JerasureRS(&ec); //if Jerasure Reed Solomon
+	this.ECLibraryInit(&ec);
 	
 	int rc = ec->init(n, m, &context);
 	if (rc) {
@@ -60,17 +61,20 @@ int Data::fileEncode(){
 	ec->alloc(&buffers, bufsize, &bufsize, context);
 
 	/* Open source file and destination files */
-	source = fopen(filename, "rb");
+	source = fopen(filename.c_str(), "rb");
 	if(!source){
 		printf("ERROR: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
 	int j;
+	char strJ[30];
+	string filenameDestJ;
 	
 	for (j = 0; j < n + m; j++) {
-		sprintf(filenameDest, "./%s.%d", filename, j);
-	    	destination[j] = fopen(filenameDest, "wb");
+		sprintf(strJ, "%d", j);//convert J to string
+		filenameDestJ = filenameDest + "." + strJ;
+    	destination[j] = fopen(filenameDestJ.c_str(), "wb");
 		if(!destination[j]){
 			printf("ERROR: %s\n", strerror(errno));
 			exit(EXIT_FAILURE);
@@ -112,24 +116,48 @@ int Data::fileEncode(){
 int Data::chunksSend(){
 	//TODO
 
-	//threadSTART HERE
-	//int ffs_sendfile(const char *proto, const char *remote_ip, const char *server_port, const char *local_filename, const char *remote_filename);
+	struct target{
+		string localpath;
+		string remotepath;
+		string remoteHost;
+		string remotePort;
+	}
+
+
+	void * threadSendFunc(void * args){
+		struct target * target = (struct target *)args;
+		ffs_sendfile("udt", target->remoteHost.c_str(), target->remotePort.c_str(), target->localpath.c_str(), target->remotepath.c_str());
 	
-	//thread JOIN HERE
+	};
+
+
+	pthread_t threads[this.n+this.m];
+	int args[this.n+this.m];//TODO MALLOC AND FILL STRUCTURES
+	int j;
+	for(j=0; j < this.n+this.m; j++){
+		pthread_create(&thread[j], NULL, &threadSendFunc, (void *)&args[j]);
+	}
+
+	for(j=0; j < this.n+this.m; j++){
+		pthread_join(&thread[j], NULL);
+	}
 
 	return 0;
 }
 
-int Data::fileDecode(){
+int Data::fileDecode(string filepath){
 
-
+	string filecacheSource = this.cacheDirectory + this.meta.getHash();
+	int n = this.config->k;
+	int m = this.config->m;
+	int bufsize = this.config->bufsize;
+	string filenameDest;
 
 	/* Initialize Ec Functions and Context */
 	ecFunctions ec;
     ecContext context;
 
-	ec_init_Gibraltar(&ec); //If Gibraltar
-	//ec_init_JerasureRS(&ec); //if Jerasure Reed Solomon
+	this.ECLibraryInit(&ec);
 	
 	int rc = ec->init(n, m, &context);
 	if (rc) {
@@ -153,15 +181,20 @@ int Data::fileDecode(){
 	ngood=0;
 	nbad=0;
 
-	destination = fopen(filename, "wb");
+	destination = fopen(filepath.c_str(), "wb");
 	if(!destination){
 		printf("ERROR: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
+	string strJ;
+	string fileSourceJ;
+
 	for (j = 0; j < n + m; j++) {
-		sprintf(filenameDest, "./%s.%d", filename, j);
-	    	source[j] = fopen(filenameDest, "rb");
+		sprintf(strJ, "%d", j);
+		fileSourceJ = filecacheSource + strJ;
+    	source[j] = fopen(fileSourceJ.c_str(), "rb");
+    	
 		if(!source[j]){
 			if(errno != ENOENT && errno != EACCES){
 			//Its normal not to find some files TODO Note: In a real application, the system should be aware of the failures, and should try in priority the known good parts.
@@ -235,5 +268,23 @@ int Data::fileDecode(){
 	ec->free(buffers, context);
 	ec->destroy(context);
     	
+	return 0;
+}
+
+int Data::ECLibraryInit(ecContext * ec){
+
+	switch(this.config->codingId){
+	
+		case 0: //should be replaced by a defined variable like GIBRALTAR
+			ec_init_Gibraltar(ec);
+			break;
+	
+		case 1: //should be replaced by a defined variable like JERASURERS
+			ec_init_JerasureRS(ec);
+			break;
+			
+		default:
+			return 1;
+	}
 	return 0;
 }
