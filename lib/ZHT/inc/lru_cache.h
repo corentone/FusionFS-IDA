@@ -7,8 +7,8 @@
 /**
  * @file lru_cache.h Template cache with an LRU removal policy
  * @author Patrick Audley
- * @version 1.3
- * @date May 2011
+ * @version 1.4
+ * @date June 2012
  * @par
  * This cache is thread safe if compiled with _REENTRANT defined.  It
  * uses the BOOST scientific computing library to provide the thread safety
@@ -16,6 +16,7 @@
  *
  * @par
  * Thanks to graydon@pobox.com for the size counting functor.
+ * Thanks to 月迷津渡 gdcex@qq.com for fixes and tweaks.
  *
  */
 /**
@@ -121,6 +122,7 @@ template< class Key, class Data, class Sizefn = Countfn< Data > > class LRUCache
 			SCOPED_MUTEX;
 			_list.clear();
 			_index.clear();
+			_curr_size = 0;
 		};
 
 		/** @brief Checks for the existance of a key in the cache.
@@ -196,7 +198,7 @@ template< class Key, class Data, class Sizefn = Countfn< Data > > class LRUCache
 			Map_Iter miter = _index.find( key );
 			if( miter == _index.end() ) return false;
 			if( touch_data )
-			  _touch( key );
+			  _list.splice( _list.begin(), _list, miter->second ); // Do a touch inline.
 			data = miter->second->second;
 			return true;
 		}
@@ -229,34 +231,6 @@ template< class Key, class Data, class Sizefn = Countfn< Data > > class LRUCache
 				_remove( liter->first );
 			}
 		}
-
-		//
-	inline void insert(const Key &key, const Data &data, Data &removed_data) {
-		SCOPED_MUTEX;
-		// Touch the key, if it exists, then replace the content.
-		Map_Iter miter = _touch(key);
-		if (miter != _index.end())
-			_remove(miter);
-
-		// Ok, do the actual insert at the head of the list
-		_list.push_front(std::make_pair(key, data));
-		List_Iter liter = _list.begin();
-
-		// Store the index
-		_index.insert(std::make_pair(key, liter));
-		_curr_size += Sizefn()(data);
-		cout<<"now current size = "<<_curr_size<<endl;
-		// Check to see if we need to remove an element due to exceeding max_size
-		while (_curr_size > _max_size) {
-			// Remove the last element.
-			cout<<"LRC_cache: hit the max_size "<<_max_size<<", now current size = "<<_curr_size<<endl;
-			liter = _list.end();
-			--liter;
-			removed_data = liter->second;
-			_remove(liter->first);
-		}
-
-	}
 
 		/** @brief Get a list of keys.
 				@return list of the current keys.

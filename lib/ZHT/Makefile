@@ -9,7 +9,7 @@ LFLAGS+=-lzht
 
 #SOURCES=$(wildcard src/common/*.cpp)
 #OBJECTS=$(SOURCES:.cpp=.o)
-OBJECTS=obj/meta.pb.o obj/net_util.o obj/novoht.o obj/zht_util.o
+OBJECTS=obj/meta.pb.o obj/net_util.o obj/novoht.o obj/zht_util.o obj/lru_cache.o
 
 CFLAGS+=-I$PROTO_HOME/usr/local/include/google/protobuf#your Google Protobuf location here :)
 
