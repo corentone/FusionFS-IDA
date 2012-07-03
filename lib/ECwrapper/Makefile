@@ -46,7 +46,7 @@ examples: lib/libecwrapper.a
 	$(CC) $(CFLAGS) examples/fileEncoder.c -o examples/fileEncoder $(LFLAGS)
 	$(CC) $(CFLAGS) examples/fileDecoder.c -o examples/fileDecoder $(LFLAGS)
 
-lib/libecwrapper.a: $(OBJECTS) libs
+lib/libecwrapper.a: libs $(OBJECTS)
 	ar rus lib/libecwrapper.a obj/*.o 
 
 libs: lib/libgibraltar.a lib/libjerasure.a

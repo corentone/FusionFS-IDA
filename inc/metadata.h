@@ -10,8 +10,6 @@
 #include <vector>
 #include <client.h>
 
-
-
 class Metadata{
 	public:
 		Metadata(configuration config);
