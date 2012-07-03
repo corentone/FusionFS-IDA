@@ -7,7 +7,7 @@ CXX=g++
 CFLAGS=-Xlinker -zmuldefs -Llib -L/usr/local/lib -Iinc
 LFLAGS=-lstdc++ -lrt -lpthread -lm -lc -lprotobuf -lprotoc
 
-OBJECTS=metadata.o data.o idaAPI.o
+OBJECTS=data.o metadata.o idaAPI.o
 
 #tocheck
 #.PHONY: clean ida

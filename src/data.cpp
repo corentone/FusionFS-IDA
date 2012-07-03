@@ -6,39 +6,44 @@
  */
 
 #include "../inc/data.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
-Data::Data(configuration * config, Metadata * meta){
 
-	this.config = config;
-	this.meta = meta;
+Data::Data(configuration * config/*TODO, Metadata * meta*/){
+
+	this->config = config;
+	//TODO this.meta = meta;
 
 }
 
-int Data::insert(string filepath, vector<string> locations){
-	this.fileEncode(filepath);
-	this.chunksSend(locations);
+int Data::insert(std::string filepath, std::vector<std::string> locations){
+	this->fileEncode(filepath);
+	this->chunksSend(locations);
 	return 0;
 }
 
-int Data::remove(string filepath, vector<string> locations){
+int Data::remove(std::string filepath, std::vector<std::string> locations){
 	//TODO	
 	//Order to remote node to delete FILES!
 	return 0;
 }
 
-int Data::get(string filepath, vector<string> locations){
-	this.chunksDownload();
-	this.fileDecode();
+int Data::get(std::string filepath, std::vector<std::string> locations){
+	//this->chunksDownload();
+	this->fileDecode(filepath);
 }
 
-int Data::fileEncode(string filepath){
+int Data::fileEncode(std::string filepath){
 
 	//INPUTS: Filename to Encode, # data blocks (n), # parity blocks (m), size of buffer (in B)
-	string filename = filepath;
-	string filenameDest = this.config->cacheDirectory + this.meta.getHash();
-	int n = this.config->k;
-	int m = this.config->m;
-	int bufsize = this.config->bufsize;
+	std::string filename = filepath;
+	std::string filenameDest = this->config->cacheDirectory + "FileHashHere"; //TODO+ this.meta.getHash();
+	int n = this->config->k;
+	int m = this->config->m;
+	int bufsize = this->config->bufsize;
 
 	FILE *source;
 	FILE *destination[n+m];
@@ -48,7 +53,7 @@ int Data::fileEncode(string filepath){
 	ecFunctions ec;
     ecContext context;
 
-	this.ECLibraryInit(&ec);
+	this->ECLibraryInit(&ec);
 	
 	int rc = ec->init(n, m, &context);
 	if (rc) {
@@ -69,10 +74,10 @@ int Data::fileEncode(string filepath){
 
 	int j;
 	char strJ[30];
-	string filenameDestJ;
+	std::string filenameDestJ;
 	
 	for (j = 0; j < n + m; j++) {
-		sprintf(strJ, "%d", j);//convert J to string
+		sprintf(strJ, "%d", j);//convert J to std::string
 		filenameDestJ = filenameDest + "." + strJ;
     	destination[j] = fopen(filenameDestJ.c_str(), "wb");
 		if(!destination[j]){
@@ -113,51 +118,46 @@ int Data::fileEncode(string filepath){
 	return 0;
 }
 
-int Data::chunksSend(vector<string> locations){
-	//TODO
-
-	struct target{
-		string localpath;
-		string remotepath;
-		string remoteHost;
-		string remotePort;
-	}
-
-
-	void * threadSendFunc(void * args){
+void * threadSendFunc(void * args){
 		struct target * target = (struct target *)args;
-		ffs_sendfile("udt", target->remoteHost.c_str(), target->remotePort.c_str(), target->localpath.c_str(), target->remotepath.c_str());
+		//TODO ffs_sendfile("udt", target->remoteHost.c_str(), target->remotePort.c_str(), target->localpath.c_str(), target->remotepath.c_str());
 	
 	};
 
+int Data::chunksSend(std::vector<std::string> locations){
+	//TODO
 
-	pthread_t threads[this.n+this.m];
-	int args[this.n+this.m];//TODO MALLOC AND FILL STRUCTURES
+	int n = this->config->k;
+	int m = this->config->m;
+
+	pthread_t threads[n+m];
+	int args[n+m];//TODO MALLOC AND FILL STRUCTURES
 	int j;
-	for(j=0; j < this.n+this.m; j++){
-		pthread_create(&thread[j], NULL, &threadSendFunc, (void *)&args[j]);
+	for(j=0; j < n+m; j++){
+		pthread_create(&threads[j], NULL, &threadSendFunc, (void *)&args[j]);
 	}
 
-	for(j=0; j < this.n+this.m; j++){
-		pthread_join(&thread[j], NULL);
+	for(j=0; j < n+m; j++){
+		pthread_join(threads[j], NULL);
 	}
 
 	return 0;
 }
 
-int Data::fileDecode(string filepath){
+int Data::fileDecode(std::string filepath){
 
-	string filecacheSource = this.cacheDirectory + this.meta.getHash();
-	int n = this.config->k;
-	int m = this.config->m;
-	int bufsize = this.config->bufsize;
-	string filenameDest;
+	std::string filecacheSource = this->config->cacheDirectory + "FileHashHere"; //TODO+ this.meta.getHash();
+	int n = this->config->k;
+	int m = this->config->m;
+	int bufsize = this->config->bufsize;
+	int filesize = 101;//this->meta->getFilesize();TODO
+	std::string filenameDest;
 
 	/* Initialize Ec Functions and Context */
 	ecFunctions ec;
     ecContext context;
 
-	this.ECLibraryInit(&ec);
+	this->ECLibraryInit(&ec);
 	
 	int rc = ec->init(n, m, &context);
 	if (rc) {
@@ -177,7 +177,7 @@ int Data::fileDecode(string filepath){
 
 	int goodBufIds[m+n];
 	int badBufIds[m+n];
-	
+	int ngood,nbad,i,j,tmp,unfinished,nBytes,towrite;
 	ngood=0;
 	nbad=0;
 
@@ -187,8 +187,8 @@ int Data::fileDecode(string filepath){
 		exit(EXIT_FAILURE);
 	}
 
-	string strJ;
-	string fileSourceJ;
+	char strJ[30];//TODO not safe!
+	std::string fileSourceJ;
 
 	for (j = 0; j < n + m; j++) {
 		sprintf(strJ, "%d", j);
@@ -226,7 +226,7 @@ int Data::fileDecode(string filepath){
 	
 	while (unfinished) {
 		for (j = 0; j < ngood; j++) {
-			fread(buffers + j*bufsize,sizeof(unsigned char), bufsize, source[goodBufIds[j]]);
+			fread((unsigned char*)buffers + j*bufsize,sizeof(unsigned char), bufsize, source[goodBufIds[j]]);
 		}
 	
 		int buf_ids[256];
@@ -239,7 +239,7 @@ int Data::fileDecode(string filepath){
 			if (buf_ids[i] != i) {
 				j = i+1;
 				while (buf_ids[j] != i) j++;
-				memcpy(buffers + bufsize*i, buffers + bufsize*j, bufsize);
+				memcpy((unsigned char*)buffers + bufsize*i, (unsigned char*)buffers + bufsize*j, bufsize);
 				buf_ids[i] = i;
 			}
 		}
@@ -258,7 +258,6 @@ int Data::fileDecode(string filepath){
 	}
 	
 	/* Close files */
-	fclose(sourceMeta);
 	fclose(destination);
 	for (j = 0; j < ngood; j++) {
 		fclose(source[goodBufIds[j]]);
@@ -271,9 +270,9 @@ int Data::fileDecode(string filepath){
 	return 0;
 }
 
-int Data::ECLibraryInit(ecContext * ec){
+int Data::ECLibraryInit(ecFunctions * ec){
 
-	switch(this.config->codingId){
+	switch(this->config->codingId){
 	
 		case 0: //should be replaced by a defined variable like GIBRALTAR
 			ec_init_Gibraltar(ec);
