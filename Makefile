@@ -40,7 +40,7 @@ ecwrapper: lib/ECwrapper/Makefile
 
 
 
-ida: ecwrapper src/ida.cpp $(OBJECTS)
+ida: zht ecwrapper src/ida.cpp $(OBJECTS)
 	$(CXX) $(CFLAGS) src/ida.cpp -o bin/fu-fs $(LFLAGS)
 
 PORT=5000

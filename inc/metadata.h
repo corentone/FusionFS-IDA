@@ -10,8 +10,6 @@
 #include <vector>
 #include <zht>
 
-
-
 class Metadata{
 	public:
 		Metadata(configuration config);
