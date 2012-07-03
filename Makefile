@@ -19,6 +19,7 @@ all:
 
 ###ZHT Library Compilation and import
 LFLAGS+=-lzht
+CFLAGS+=-Ilib/ECwrapper/inc
 zht: lib/ZHT/Makefile
 	cd lib/ZHT && make
 	cp lib/ZHT/lib/libzht.a lib/
@@ -28,7 +29,7 @@ zht: lib/ZHT/Makefile
 LFLAGS+=-lecwrapper
 CUDAINC=-I $(CUDA_INC_PATH)
 CUDALIB=-L $(CUDA_LIB_PATH)
-CFLAGS+=$(CUDAINC)
+CFLAGS+=$(CUDAINC) -Ilib/ZHT/inc
 LFLAGS+=$(CUDALIB) 
 
 ecwrapper: lib/ECwrapper/Makefile
@@ -40,7 +41,7 @@ ecwrapper: lib/ECwrapper/Makefile
 
 
 
-ida: ecwrapper src/ida.cpp $(OBJECTS)
+ida: zht ecwrapper src/ida.cpp $(OBJECTS)
 	$(CXX) $(CFLAGS) src/ida.cpp -o bin/fu-fs $(LFLAGS)
 
 PORT=5000
