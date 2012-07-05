@@ -49,3 +49,23 @@ int Metadata::get(string remoteFilepath) {
 	string metadata = client.getMetadata(remoteFilepath);
 
 }
+
+chunksLocations * getLocations(int number, std::string filepath){
+	//TODO
+	
+	/* Description:
+	This function takes an int (the number of Chunks I want to retrieve for downloading or uploading) and a string (the original filepath of the file I want to up/down-load)
+	
+	It returns a chunksLocations, which is a structure that stores in vectors the location of the chunks. The key in vectors are the same as the "number" of the chunk). 
+	
+	Those locations should be obtained by encoding the filepath and the number. For example, if we have 5 chunks (k=3,m=2) and a filepath: foo, Let's say the filehash is pfjgle. Then the function should return the locations of pfjgle.0, pfjgle.1, pfjgle.2,pfjgle.3, pfjgle.4. (They all need to be hashed and queried to ZHT)
+	
+	*/
+	
+	chunksLocations * locations = (chunksLocations *) malloc(sizeof(chunksLocations));
+	
+	//TODO
+	
+	
+	return locations;
+}

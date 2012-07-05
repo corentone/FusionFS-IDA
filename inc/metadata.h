@@ -10,6 +10,12 @@
 #include <vector>
 #include <client.h>
 
+typedef struct  {
+	int number;
+	std::vector<std::string> hosts;
+	std::vector<std::string> ports;
+} chunksLocations;
+
 class Metadata{
 	public:
 		Metadata(configuration config);
@@ -17,6 +23,7 @@ class Metadata{
 		int insert();
 		int remove();
 		int get();
+		chunksLocations * getLocations(int number, std::string filepath);
 
 	private:
 		//packets?
@@ -25,4 +32,6 @@ class Metadata{
 		ZHTClient *client;
 
 };
+
+
 
