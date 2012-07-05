@@ -1,8 +1,12 @@
 #ifndef ZHTCLIENT_H
 #define ZHTCLIENT_H
-#include "client.h"
+
+#include "lru_cache.h"
 #include <string>
 #include <stdio.h>
+#include <list>
+#include <iostream>
+
 using namespace std;
 
 struct thread_data {

@@ -1,7 +1,9 @@
 # Author:  Corentin Debains
 # Email:   cdebains@iit.edu
 #
-
+# Author:  Pedro Alvarez-Tabio
+# Email:   palvare3@iit.edu
+#
 
 CC=gcc
 CFLAGS=-Wall -Llib -Iinc -g -std=c99
@@ -49,6 +51,7 @@ examples: lib/libecwrapper.a
 lib/libecwrapper.a: libs $(OBJECTS)
 	ar rus lib/libecwrapper.a obj/*.o 
 
+# If you don't have CUDA, remove lib/libgibraltar.a
 libs: lib/libgibraltar.a lib/libjerasure.a
 	$(foreach var,$(LIBS),ar x lib/$(var); )
 	mv *.o obj/
