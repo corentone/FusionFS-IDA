@@ -4,6 +4,7 @@
 #include "lru_cache.h"
 #include <string>
 #include <stdio.h>
+#include <signal.h>
 #include <list>
 #include <iostream>
 

@@ -43,6 +43,10 @@
  *
  * @example lru_example.cpp
  */
+ 
+// Added for compatibility (Pedro)
+#include <cstddef>
+
 #include <map>
 #include <list>
 #include <vector>
