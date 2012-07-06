@@ -34,12 +34,15 @@ public:
 	int REPLICATION_TYPE; //serverside or client side. -1:error
 	int NUM_REPLICAS; //-1:error
 	int protocolType; //1:1TCP; 2:UDP; 3.... Reserved.  -1:error
-	vector<struct HostEntity> memberList;
+
 	ZHTClient();
 
 	int initialize(string configFilePath, string memberListFilePath);
 	struct HostEntity str2Host(string str);
 	struct HostEntity str2Host(string str, int &index);
+	
+	vector<struct HostEntity> memberList;
+	
 	int str2Sock(string str);
 	int str2SockLRU(string str, bool tcp);
 	int insert(string str); //following functions should only know string, address where to can be calculated.
