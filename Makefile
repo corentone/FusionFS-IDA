@@ -10,7 +10,7 @@ LFLAGS=-lstdc++ -lrt -lpthread -lm -lc -lprotobuf -lprotoc
 OBJECTS=data.o metadata.o idaAPI.o
 
 #tocheck
-#.PHONY: clean ida
+#.PHONY: clean ida main data metadata
 
 
 all:
@@ -37,7 +37,17 @@ ecwrapper: lib/ECwrapper/Makefile
 	cp lib/ECwrapper/lib/libecwrapper.a lib/
 ###
 
+## Custom File Make rules to compile all separately 
+# Should be deleted for finale version
+main: ida.o
+	ls
 
+data: data.o
+	ls
+
+metadata: metadata.o
+	ls
+##
 
 
 
