@@ -5,7 +5,7 @@
  * Data Management Class for IDA API Header
  */
 
-//#include "metadata.h"
+#include "metadata.h"
 #include "config.h"
 #include <string>
 #include <vector>
@@ -16,17 +16,17 @@
 class Data{
 	public:
 		Data(configuration * config);
-		int insert(std::string filepath, std::vector<std::string> locations);
-		int remove(std::string filepath, std::vector<std::string> locations);
+		int insert(std::string filepath);
+		int remove(std::string filepath);
 		int get(std::string filepath, std::vector<std::string> locations);
 
 	private:
 		configuration * config;
-		//Metadata * meta;
+		Metadata * meta;
 		std::string cachePath;
 		int fileEncode(std::string filepath);
 		int fileDecode(std::string filepath);
-		int chunksSend(std::vector<std::string> locations);
+		int chunksSend(chunksLocations * locations);
 		//int chunksDownload();
 		int ECLibraryInit(ecFunctions * ec);
 		
@@ -39,9 +39,9 @@ void *threadSendFunc(void * args);
 
 
 //TODO Define the way to share with Metadata a structure containing the locations and ports
-struct target{
-		std::string localpath;
-		std::string remotepath;
+struct threadArgs{
+		std::string cacheDirectory;
+		std::string chunkPath;
 		std::string remoteHost;
 		std::string remotePort;
 };

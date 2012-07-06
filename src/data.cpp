@@ -19,13 +19,16 @@ Data::Data(configuration * config/*TODO, Metadata * meta*/){
 
 }
 
-int Data::insert(std::string filepath, std::vector<std::string> locations){
+int Data::insert(std::string filepath){
 	this->fileEncode(filepath);
+	
+	chunksLocations * locations = this->meta->getLocations(this->config->k+this->config->m,filepath);
+	
 	this->chunksSend(locations);
 	return 0;
 }
 
-int Data::remove(std::string filepath, std::vector<std::string> locations){
+int Data::remove(std::string filepath){
 	//TODO	
 	//Order to remote node to delete FILES!
 	return 0;
@@ -124,7 +127,7 @@ void * threadSendFunc(void * args){
 	
 	};
 
-int Data::chunksSend(std::vector<std::string> locations){
+int Data::chunksSend(chunksLocations * locations){
 	//TODO
 
 	int n = this->config->k;
