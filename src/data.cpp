@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <pthread.h>
 
 
 Data::Data(configuration * config/*TODO, Metadata * meta*/){
@@ -24,7 +25,7 @@ int Data::insert(std::string filepath){
 	
 	chunksLocations * locations = this->meta->getLocations(this->config->k+this->config->m,filepath);
 	
-	this->chunksSend(locations);
+	this->chunksSend(this->meta->getHash(filepath), locations);
 	return 0;
 }
 
@@ -127,16 +128,26 @@ void * threadSendFunc(void * args){
 	
 	};
 
-int Data::chunksSend(chunksLocations * locations){
+int Data::chunksSend(std::string fileHash, chunksLocations * locations){
 	//TODO
 
 	int n = this->config->k;
 	int m = this->config->m;
 
 	pthread_t threads[n+m];
-	int args[n+m];//TODO MALLOC AND FILL STRUCTURES
+	struct threadArgs[n+m];//argument structure
+	
+	char strJ[30];
 	int j;
 	for(j=0; j < n+m; j++){
+	
+		//1 fill the argument structure
+		sprintf(strJ, "%d", j);//convert J to std::string
+		threadArgs[j].chunkPath = this->config->cacheDirectory + filenameDest + "." + strJ;
+		threadArgs[j].remoteHost = locations->hosts[j];
+		threadArgs[j].remoteHost = locations->ports[j];
+	
+		//2 Start the thread
 		pthread_create(&threads[j], NULL, &threadSendFunc, (void *)&args[j]);
 	}
 
