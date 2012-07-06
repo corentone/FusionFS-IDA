@@ -135,7 +135,7 @@ int Data::chunksSend(std::string fileHash, chunksLocations * locations){
 	int m = this->config->m;
 
 	pthread_t threads[n+m];
-	struct threadArgs[n+m];//argument structure
+	threadArgs args[n+m];//argument structure
 	
 	char strJ[30];
 	int j;
@@ -143,9 +143,9 @@ int Data::chunksSend(std::string fileHash, chunksLocations * locations){
 	
 		//1 fill the argument structure
 		sprintf(strJ, "%d", j);//convert J to std::string
-		threadArgs[j].chunkPath = this->config->cacheDirectory + filenameDest + "." + strJ;
-		threadArgs[j].remoteHost = locations->hosts[j];
-		threadArgs[j].remoteHost = locations->ports[j];
+		args[j].chunkPath = this->config->cacheDirectory + fileHash + "." + strJ;
+		args[j].remoteHost = locations->hosts[j];
+		args[j].remoteHost = locations->ports[j];
 	
 		//2 Start the thread
 		pthread_create(&threads[j], NULL, &threadSendFunc, (void *)&args[j]);

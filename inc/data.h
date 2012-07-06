@@ -37,8 +37,8 @@ void *threadSendFunc(void * args);
 
 
 //TODO Define the way to share with Metadata a structure containing the locations and ports
-struct threadArgs{
+typedef struct threadArgs_s{
 		std::string chunkPath;
 		std::string remoteHost;
 		std::string remotePort;
-};
+} threadArgs;
