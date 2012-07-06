@@ -13,3 +13,8 @@
 
 # gedit temp files
 *.*~
+
+#Binaries
+libECwrapper/examples/example
+libECwrapper/examples/fileDecoder
+libECwrapper/examples/fileEncoder
