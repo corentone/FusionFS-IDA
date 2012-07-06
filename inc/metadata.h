@@ -10,7 +10,7 @@
 #include <vector>
 #include <client.h>
 
-typedef struct  {
+typedef struct {
 	int number;
 	std::vector<std::string> hosts;
 	std::vector<std::string> ports;
@@ -20,9 +20,9 @@ class Metadata{
 	public:
 		Metadata(configuration config);
 		int create(std::string filepath);
-		int insert();
-		int remove();
-		int get();
+		int insert(std::string filepath);
+		int remove(std::string remoteFilepath);
+		int get(std::string remoteFilepath);
 		chunksLocations * getLocations(int number, std::string filepath);
 
 	private:
