@@ -4,6 +4,9 @@
  *
  * Metadata Class Header
  */
+ 
+#ifndef FF_METADATA_H
+#define FF_METADATA_H
 
 #include "config.h"
 #include <client.h>
@@ -33,4 +36,4 @@ class Metadata{
 };
 
 
-
+#endif /*FF_METADATA_H*/
