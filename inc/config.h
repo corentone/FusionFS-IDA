@@ -2,6 +2,7 @@
 #define FF_CONFIG_H
 
 #include <string>
+#include <vector>
 
 // Struct for the config file
 typedef struct {

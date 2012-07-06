@@ -7,8 +7,6 @@
 
 #include "metadata.h"
 #include "config.h"
-#include <string>
-#include <vector>
 #include <ecwrapper.h>
 //#include <TRANSFERPROTOCOL>
 
@@ -26,7 +24,7 @@ class Data{
 		std::string cachePath;
 		int fileEncode(std::string filepath);
 		int fileDecode(std::string filepath);
-		int chunksSend(chunksLocations * locations);
+		int chunksSend(std::string hashFile, chunksLocations * locations);
 		//int chunksDownload();
 		int ECLibraryInit(ecFunctions * ec);
 		
@@ -40,7 +38,6 @@ void *threadSendFunc(void * args);
 
 //TODO Define the way to share with Metadata a structure containing the locations and ports
 struct threadArgs{
-		std::string cacheDirectory;
 		std::string chunkPath;
 		std::string remoteHost;
 		std::string remotePort;

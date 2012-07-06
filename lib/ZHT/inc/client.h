@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <list>
 #include <iostream>
+#include "zht_util.h"
 
 using namespace std;
 

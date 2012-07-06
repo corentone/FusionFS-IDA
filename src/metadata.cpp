@@ -69,3 +69,21 @@ chunksLocations * getLocations(int number, std::string filepath){
 	
 	return locations;
 }
+
+std::string getHash(std::string filepath){
+	//TODO
+	
+	/* Description:
+	This Function returns the hash of the current metadata. This should be done by querying the hash in ZHT
+	
+	The output is the hash string for the file
+	
+	*/
+	
+	std::string fileHash = "Some1Hash2Here3";
+	
+	return fileHash;
+
+
+}
+

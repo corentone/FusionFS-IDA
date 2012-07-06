@@ -6,13 +6,11 @@
  */
 
 #include "config.h"
-#include <string>
-#include <vector>
 #include <client.h>
 
 typedef struct  {
 	int number;
-	std::vector<std::string> hosts;
+	std::vector<string> hosts;
 	std::vector<std::string> ports;
 } chunksLocations;
 
@@ -24,6 +22,7 @@ class Metadata{
 		int remove();
 		int get();
 		chunksLocations * getLocations(int number, std::string filepath);
+		std::string getHash(std::string filepath);
 
 	private:
 		//packets?
