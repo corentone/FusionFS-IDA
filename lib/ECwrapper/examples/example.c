@@ -12,8 +12,6 @@
  
 ecFunctions ec;
 
-
-
 //The program is similar to gibraltar example (/examples/benchmark.cc), but uses the wrapper instead of gibraltar.
 #ifndef min_test
 #define min_test 2

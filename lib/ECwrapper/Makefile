@@ -10,10 +10,10 @@ CFLAGS=-Wall -Llib -Iinc -g -std=c99
 CUDAINC=-I $(CUDA_INC_PATH)
 CUDALIB=-L $(CUDA_LIB_PATH)
 LFLAGS=-lecwrapper
+OBJECTS=obj/ec.o
 
 #tocheck
 #.PHONY: clean jerasure examples
-
 
 all:
 	make examples

@@ -8,10 +8,9 @@
  * Information Dispersal Algorithm based FusionFS API
  */
 
-
-
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "../inc/idaAPI.h"
 
 using namespace std;
@@ -28,35 +27,38 @@ idaAPI::idaAPI(string configPath){
 	// Create new Metadata configuration object
 	configuration config;
 	config.path = configPath;
-	config.memberPath = "members";
+	config.member_path = "members";
 	
 	// Read the config file for k, m, codingId and bufsize
-	std::ifstream file(configPath);
-	std::string   line;
+	ifstream infile;
+	infile.open(configPath.c_str());
+	string line;
 
-	while(std::getline(file, line)) {
-		std::vector<std::string> tokens = split(line, '=');
+	while(!infile.eof()) {
+		getline(infile, line);
+		vector<string> tokens = split(line, '=');
 		string key = tokens[0];
 		string value = tokens[1];
 		
 		// Really dirty, I accept suggestions
-		if (strcmp(key, "k") == 0) {
-			config.k = atoi(value);
-		} else if (strcmp(key, "m") == 0) {
-			config.m = atoi(value);
-		}	else if (strcmp(key, "codingId") == 0) {
-			config.codingId = atoi(value);
-		} else if (strcmp(key, "bufsize") == 0) {
-			config.bufsize = atoi(value);
+		if (strcmp(key.c_str(), "k") == 0) {
+			config.k = atoi(value.c_str());
+		} else if (strcmp(key.c_str(), "m") == 0) {
+			config.m = atoi(value.c_str());
+		}	else if (strcmp(key.c_str(), "codingId") == 0) {
+			config.codingId = atoi(value.c_str());
+		} else if (strcmp(key.c_str(), "bufsize") == 0) {
+			config.bufsize = atoi(value.c_str());
 		}
 	}
 	
 	meta = new Metadata(config);
+	infile.close();
 }
 
 int idaAPI::insert(string filepath) {
 	// First, insert metadata
-	meta.insert(filepath);
+	meta->insert(filepath);
 	
 	// Then, data insertion
 }
@@ -65,12 +67,12 @@ int idaAPI::remove(string filepath) {
 	//TODO
 	
 	// Last, remove metadata
-	meta.remove(filepath);
+	meta->remove(filepath);
 }
 
 int idaAPI::get(string filepath) {
 	
-	meta.get(filepath);
+	meta->get(filepath);
 	//TODO
 
 }
